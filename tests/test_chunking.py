@@ -1,12 +1,10 @@
+"""Tests for the chunking pipeline."""
 
 import pytest
 
 from src.chunking import chunk_documents, chunk_text, split_sentences
-from src.knowledge_base import (
-    CHUNK_MAX_WORDS,
-    CHUNK_OVERLAP_SENTENCES,
-    DOCUMENTS,
-)
+from src.documents import DOCUMENTS
+from src.knowledge_base import CHUNK_MAX_WORDS, CHUNK_OVERLAP_SENTENCES
 
 
 TEXT = (

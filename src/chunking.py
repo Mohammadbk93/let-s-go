@@ -1,7 +1,11 @@
+"""Chunking: split document text into overlapping, sentence-aligned chunks."""
 
 import re
 
 
+# A sentence ends at ".", "!" or "?" followed by whitespace. The
+# lookbehind keeps the punctuation attached to its sentence, and the
+# whitespace requirement leaves decimals such as "1.5" intact.
 SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+")
 
 
@@ -43,9 +47,13 @@ def chunk_text(
     for sentence in split_sentences(text):
         sentence_words = len(sentence.split())
 
+        # The next sentence does not fit: close the current chunk and
+        # start a new one.
         if current and current_words + sentence_words > max_words:
             chunks.append(" ".join(current))
 
+            # Carry the last sentence(s) over so neighbouring chunks
+            # share context across the cut.
             current = (
                 current[-overlap_sentences:]
                 if overlap_sentences
@@ -53,6 +61,8 @@ def chunk_text(
             )
             current_words = sum(len(s.split()) for s in current)
 
+            # Drop the overlap when it would push the new chunk over
+            # the limit; staying within max_words takes priority.
             if current_words + sentence_words > max_words:
                 current = []
                 current_words = 0
@@ -82,6 +92,8 @@ def chunk_documents(
             overlap_sentences=overlap_sentences,
         )
 
+        # Every chunk copies its parent's metadata, so a retrieved chunk
+        # can be cited without looking the document up again.
         for position, text in enumerate(texts, start=1):
             chunks.append({
                 **doc,

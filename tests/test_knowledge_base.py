@@ -1,11 +1,12 @@
+"""Tests for retrieval and re-ranking."""
 
 import pytest
 
-from src.knowledge_base import retrieve_documents
+from src.knowledge_base import retrieve_chunks
 
 
 def test_retrieval_returns_relevant_hr_document():
-    results = retrieve_documents(
+    results = retrieve_chunks(
         "How far in advance must remote work be requested?",
         top_k=3,
     )
@@ -18,7 +19,7 @@ def test_retrieval_returns_relevant_hr_document():
 
 
 def test_retrieval_preserves_source_metadata():
-    results = retrieve_documents(
+    results = retrieve_chunks(
         "What are the password security requirements?",
         top_k=2,
     )
@@ -34,16 +35,16 @@ def test_retrieval_preserves_source_metadata():
 
 def test_empty_question_is_rejected():
     with pytest.raises(ValueError):
-        retrieve_documents("")
+        retrieve_chunks("")
 
 
 def test_invalid_top_k_is_rejected():
     with pytest.raises(ValueError):
-        retrieve_documents("Remote work policy", top_k=0)
+        retrieve_chunks("Remote work policy", top_k=0)
 
 
 def test_retrieval_returns_chunks_not_whole_documents():
-    results = retrieve_documents(
+    results = retrieve_chunks(
         "How long do I have to submit an expense claim?",
         top_k=1,
     )
@@ -56,7 +57,7 @@ def test_retrieval_returns_chunks_not_whole_documents():
 def test_reranking_puts_the_answer_chunk_first():
     question = "How far in advance must remote work be requested?"
 
-    results = retrieve_documents(question, top_k=3, rerank=True)
+    results = retrieve_chunks(question, top_k=3, rerank=True)
 
     assert "two working days in advance" in results[0]["text"]
 
@@ -66,7 +67,7 @@ def test_reranking_puts_the_answer_chunk_first():
 
 
 def test_reranking_can_be_disabled():
-    results = retrieve_documents(
+    results = retrieve_chunks(
         "What are the password security requirements?",
         top_k=2,
         rerank=False,

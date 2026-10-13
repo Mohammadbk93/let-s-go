@@ -1,22 +1,27 @@
+"""Generation: answer a question from retrieved chunks with OpenAI."""
 
 import os
 
 from dotenv import load_dotenv
 from openai import OpenAI
 
+# Read OPENAI_API_KEY and OPENAI_MODEL from a local .env file. On a
+# hosting platform these come from the environment instead.
 load_dotenv()
 
 
 def generate_answer(
     question: str,
-    retrieved_documents: list[dict],
+    retrieved_chunks: list[dict],
 ) -> str:
-    """Generate an answer using retrieved document evidence."""
+    """Generate an answer using retrieved chunks as evidence."""
 
     if not isinstance(question, str) or not question.strip():
         raise ValueError("Question must be a non-empty string.")
 
-    if not retrieved_documents:
+    # Without evidence the model would have to guess, so answer directly
+    # and skip the API call.
+    if not retrieved_chunks:
         return (
             "I could not find relevant evidence in the "
             "available documents to answer this question."
@@ -33,14 +38,18 @@ def generate_answer(
 
     passages = []
 
-    for doc in retrieved_documents:
+    # Each passage is labelled with its source so the model can cite it.
+    for chunk in retrieved_chunks:
         passages.append(
-            f"[{doc['document_id']} | {doc['title']} | "
-            f"Page {doc['page']}]\n{doc['text']}"
+            f"[{chunk['document_id']} | {chunk['title']} | "
+            f"Page {chunk['page']}]\n{chunk['text']}"
         )
 
     context = "\n\n---\n\n".join(passages)
 
+    # The instructions restrict the model to the supplied evidence and
+    # tell it to treat document text as data, which limits invented
+    # answers and prompt injection through document content.
     response = client.responses.create(
         model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
         instructions=(

@@ -1,10 +1,11 @@
+"""Streamlit user interface for the Enterprise Knowledge Assistant."""
 
 import logging
 
 import streamlit as st
 
 from src.generation import generate_answer
-from src.knowledge_base import retrieve_documents
+from src.knowledge_base import retrieve_chunks
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,7 @@ if st.button("Ask question", type="primary"):
     else:
         try:
             with st.spinner("Searching documents..."):
-                retrieved_documents = retrieve_documents(
+                retrieved_chunks = retrieve_chunks(
                     question,
                     top_k=top_k,
                     rerank=rerank,
@@ -63,7 +64,7 @@ if st.button("Ask question", type="primary"):
             with st.spinner("Generating answer..."):
                 answer = generate_answer(
                     question,
-                    retrieved_documents,
+                    retrieved_chunks,
                 )
 
             st.subheader("Answer")
@@ -71,23 +72,27 @@ if st.button("Ask question", type="primary"):
 
             st.subheader("Retrieved evidence")
 
-            for doc in retrieved_documents:
+            # Show the evidence behind the answer so it can be checked.
+            for chunk in retrieved_chunks:
                 with st.expander(
-                    f"{doc['title']} — Page {doc['page']}"
+                    f"{chunk['title']} — Page {chunk['page']}"
                 ):
                     caption = (
-                        f"Passage ID: {doc['chunk_id']} | "
-                        f"Similarity: {doc['similarity_score']:.3f}"
+                        f"Passage ID: {chunk['chunk_id']} | "
+                        f"Similarity: {chunk['similarity_score']:.3f}"
                     )
 
-                    if "rerank_score" in doc:
+                    # Only present when re-ranking is switched on.
+                    if "rerank_score" in chunk:
                         caption += (
-                            f" | Re-rank score: {doc['rerank_score']:.2f}"
+                            f" | Re-rank score: {chunk['rerank_score']:.2f}"
                         )
 
                     st.caption(caption)
-                    st.write(doc["text"])
+                    st.write(chunk["text"])
 
+        # The app is public: log the full error for the operator and show
+        # visitors only a generic message.
         except Exception:
             logger.exception("Request failed")
             st.error(
