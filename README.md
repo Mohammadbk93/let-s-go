@@ -48,6 +48,27 @@ flowchart TD
 6. An OpenAI model generates an answer from retrieved evidence.
 7. Streamlit provides the user interface.
 
+## Models
+
+| Step | Model | Runs | Characteristics |
+|---|---|---|---|
+| Embedding | `sentence-transformers/all-MiniLM-L6-v2` | Locally, on CPU | About 22M parameters, 384-dimensional vectors, reads up to 256 tokens per text |
+| Re-ranking | `cross-encoder/ms-marco-MiniLM-L-6-v2` | Locally, on CPU | About 22M parameters, reads question and passage together (up to 512 tokens), trained on MS MARCO passage ranking |
+| Answer generation | `gpt-4o-mini` (OpenAI) | OpenAI API | Hosted model, paid per token, 128k-token context window |
+
+Why I chose these models:
+
+- **Embedding model**: small, fast and free to run on CPU, and a
+  widely used baseline for semantic search. Its 256-token limit is
+  the reason chunks are capped at 100 words.
+- **Re-ranking model**: it scores each question and passage as a
+  pair, which is more accurate than comparing two separate vectors
+  but too slow to run over every chunk, so it only re-orders the
+  top 10 candidates from FAISS. It is the same size as the
+  embedding model, so it adds little memory.
+- **Answer model**: low cost and low latency, and good enough for
+  short answers that only restate retrieved evidence. It can be
+
 ## Technology
 
 - Python
