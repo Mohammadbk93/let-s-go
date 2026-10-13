@@ -1,6 +1,8 @@
 
 # Enterprise Knowledge Assistant
 
+👉🏻 [Click Here to test it](https://let-s-go-k5n5aezkatrvc7v6hjxfhv.streamlit.app/) *(Please allow a few seconds for the app to load)*
+
 A prototype Retrieval-Augmented Generation (RAG) application
 that answers questions using synthetic company policy documents.
 This project created by AI and only for interview purpose. 
