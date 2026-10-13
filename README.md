@@ -5,7 +5,7 @@
 
 A prototype Retrieval-Augmented Generation (RAG) application
 that answers questions using synthetic company policy documents.
-This project created by AI and only for interview purpose. 
+This project is only for interview purpose. 
 I keep it small and not complicated only to show the importance and fundamentals here.
 
 In the Streamlit Demo you can adjust retrieve passage numbers and see them as results below generated answers:
