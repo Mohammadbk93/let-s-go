@@ -91,6 +91,7 @@ Why I chose these models:
 
 ## Future improvements
 
+- Adding Vector DB for larger docs(Chroma, Pinecon, etc) since the dataset is small, i used only FAISS which is a search library, not a database. The index is just an in-memory table of those 12 vectors...
 - PDF ingestion
 - Retrieval evaluation and answer verification
 - Authentication and authorization
