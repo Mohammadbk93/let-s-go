@@ -26,10 +26,15 @@ with st.sidebar:
     st.header("Settings")
 
     top_k = st.slider(
-        "Number of documents to retrieve",
+        "Number of passages to retrieve",
         min_value=1,
-        max_value=3,
+        max_value=5,
         value=3,
+    )
+
+    rerank = st.checkbox(
+        "Re-rank passages with a cross-encoder",
+        value=True,
     )
 
     st.caption(
@@ -52,6 +57,7 @@ if st.button("Ask question", type="primary"):
                 retrieved_documents = retrieve_documents(
                     question,
                     top_k=top_k,
+                    rerank=rerank,
                 )
 
             with st.spinner("Generating answer..."):
@@ -69,10 +75,17 @@ if st.button("Ask question", type="primary"):
                 with st.expander(
                     f"{doc['title']} — Page {doc['page']}"
                 ):
-                    st.caption(
-                        f"Document ID: {doc['document_id']} | "
+                    caption = (
+                        f"Passage ID: {doc['chunk_id']} | "
                         f"Similarity: {doc['similarity_score']:.3f}"
                     )
+
+                    if "rerank_score" in doc:
+                        caption += (
+                            f" | Re-rank score: {doc['rerank_score']:.2f}"
+                        )
+
+                    st.caption(caption)
                     st.write(doc["text"])
 
         except Exception:
