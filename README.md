@@ -6,6 +6,10 @@ that answers questions using synthetic company policy documents.
 This project created by AI and only for interview purpose. 
 I keep it small and not complicated only to show the importance and fundamentals here.
 
+In the Streamlit Demo you can adjust retrieve passage numbers and see them as results below generated answers:
+<img width="2280" height="702" alt="image" src="https://github.com/user-attachments/assets/dac9db74-bbc9-4e60-94d5-f557d2472cc4" />
+
+
 ## Architecture
 
 ```mermaid
@@ -60,6 +64,7 @@ flowchart TD
 - Retrieval relevance thresholds are not calibrated.
 - Answer grounding and citations are not independently verified.
 - Not production-ready. (Just for Demo)
+- For reducing latency we can add Token streaming which Improves User Engagement, reduce perceived latency by delivering AI-generated text piece by piece as it is created, rather than making the user wait for the entire response to finish. (since i used synthetic small dataset i didn't apply it)
 
 ## Future improvements
 
@@ -69,3 +74,4 @@ flowchart TD
 - Structured logging and latency/cost monitoring
 - Broader automated test coverage
 - Provider-independent LLM interface
+- For precise answer also we can use hybrid search (Dense + Sparse) It's only a very small project to show the pipeline design
